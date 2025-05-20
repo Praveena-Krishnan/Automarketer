@@ -1,0 +1,25 @@
+# Core Python ML stack
+pandas
+numpy
+scikit-learn
+
+# Visualization (optional for exploration/debug)
+matplotlib
+seaborn
+
+# LLM + LangGraph ecosystem
+openai
+langchain
+langgraph
+
+# Email sending (via SendGrid or Gmail SMTP)
+sendgrid
+
+# Optional: Gmail SMTP (if not using SendGrid)
+secure-smtplib
+
+# Web app interface
+streamlit
+
+# Env config
+python-dotenv
