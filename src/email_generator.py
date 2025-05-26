@@ -1,47 +1,49 @@
-import requests
+# src/email_generator.py
 
-API_URL = "https://api.groq.ai/v1/generate"  # Example endpoint, verify actual from docs
-API_KEY = "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"
+from groq import Groq
+import json
+# Directly pass the API key here (not recommended for production, fine for testing)
+GROQ_API_KEY = "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"  # 🔐 Replace with your actual Groq API key
+
+client = Groq(api_key=GROQ_API_KEY)
+
+def generate_email(customer_profile: dict, cluster_label: int) -> str:
+    """
+    Generate a personalized marketing email using the Groq LLM.
+    """
+    prompt = f"""
+        You are a professional marketing copywriter.
+
+        Write a short promotional email for a customer with the following characteristics:
+
+        {json.dumps(customer_profile, indent=2)}
+
+        The email should:
+        - Sound like it's for an individual person, not a "cluster"
+        - Be friendly, persuasive, and natural
+        - Be no more than 120–150 words
+        - Include a catchy subject line and an engaging body
+
+        Output must be in **JSON format only**:
+        {{
+        "subject": "Your catchy subject line here",
+        "body": "The email body here"
+        }}
+
+        ❌ Do not mention clusters, segments, or technical terms
+        ✅ Write as if you're emailing a single customer
+        ✅ Only return the JSON. No explanations, labels, or extra text.
+        """
 
 
-def generate_email_with_groq(prompt: str) -> str:
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": "llama-3.1",  # Use the exact model Groq provides
-        "prompt": prompt,
-        "max_tokens": 300,
-        "temperature": 0.7,
-        "stop": ["\n\n"]
-    }
 
-    response = requests.post(API_URL, json=data, headers=headers)
-    response.raise_for_status()
-    completion = response.json()
-
-    # Adjust this depending on the exact Groq response structure
-    return completion.get("text", "").strip()
-
-def generate_email_for_cluster(cluster_summary: dict, tone: str = "friendly") -> str:
-    prompt = (
-        f"Write a {tone} marketing email targeting customers with the following profile:\n"
-        f"Income: {cluster_summary.get('Income', 'N/A'):.2f}, "
-        f"Customer Tenure: {cluster_summary.get('Customer_Tenure', 'N/A'):.2f}, "
-        f"Age: {cluster_summary.get('Age', 'N/A'):.2f}, "
-        f"Total Spend: {cluster_summary.get('Total_Spend', 'N/A'):.2f}.\n"
-        "Focus on engaging the customer and encouraging purchases."
+    response = client.chat.completions.create(
+        model="llama3-8b-8192",  # or "llama3-8b-8192"
+        messages=[
+            {"role": "system", "content": "You are a helpful marketing assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7
     )
-    return generate_email_with_groq(prompt)
 
-# Example usage
-if __name__ == "__main__":
-    sample_cluster = {
-        "Income": 0.82,
-        "Customer_Tenure": 0.14,
-        "Age": 0.22,
-        "Total_Spend": 1.02
-    }
-    email_text = generate_email_for_cluster(sample_cluster)
-    print("Generated Email:\n", email_text)
+    return response.choices[0].message.content.strip()
