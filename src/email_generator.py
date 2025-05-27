@@ -2,8 +2,12 @@
 
 from groq import Groq
 import json
+
+from dotenv import load_dotenv
+load_dotenv()
+import os
 # Directly pass the API key here (not recommended for production, fine for testing)
-GROQ_API_KEY = "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"  # 🔐 Replace with your actual Groq API key
+GROQ_API_KEY = Groq(api_key=os.getenv("GROQ_API_KEY")) # 🔐 Replace with your actual Groq API key
 
 client = Groq(api_key=GROQ_API_KEY)
 

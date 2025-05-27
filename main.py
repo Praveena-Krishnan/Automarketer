@@ -5,19 +5,37 @@ from src.email_generator import generate_email
 from src.profile import build_profile_for_cluster
 import json 
 import re
+import csv
+from datetime import datetime
 
 
 def extract_json(text):
+    import re, json
+
+    # Try to extract JSON block using regex
     match = re.search(r'\{[\s\S]*\}', text)
+
+    # Fallback: manually add closing brace if it's missing
+    if not match and text.strip().startswith("{") and not text.strip().endswith("}"):
+        print("⚠️ Detected missing closing brace. Attempting fix...")
+        text += "}"
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as e:
+            print("❌ Still invalid after adding brace:", e)
+            return None
+
     if match:
         try:
             return json.loads(match.group())
-        except json.JSONDecodeError:
-            print("⚠️ Extracted block is not valid JSON.")
+        except json.JSONDecodeError as e:
+            print("❌ JSON parse error:", e)
             return None
-    else:
-        print("⚠️ No JSON found in response.")
-        return None
+
+    print("⚠️ No JSON found in text.")
+    return None
+
+
 
 
 if __name__ == "__main__":
@@ -58,6 +76,10 @@ if __name__ == "__main__":
     df_clustered.to_csv("data/clustered_customers.csv", index=False)
     print("Clustered data saved to 'data/clustered_customers.csv'")
     
+    output_file = "data/cluster_emails.csv"
+    #Prepare email rows
+    email_rows = [("ClusterID", "Subject", "Body", "Timestamp")]
+    
     print("\n🔗 Generating marketing emails for each cluster...\n")
 
     cluster_ids = df_clustered['ClusterLabel'].unique()
@@ -74,11 +96,19 @@ if __name__ == "__main__":
             email_data = extract_json(email_json_str)
 
             if email_data:
+                
                 print("✅ Subject:", email_data["subject"])
                 print("✅ Body:\n", email_data["body"])
-                
+               
+            # if not email_data:
+            #      print("🚨 Full raw response:")
+            #      print(email_json_str)
+            # else:
+            #     print(f"⚠️ Could not extract email JSON for cluster {cluster_id}")
             
 
 
         except Exception as e:
             print(f"❌ Failed to generate email for cluster {cluster_id}:", e)
+
+
