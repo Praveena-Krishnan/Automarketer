@@ -83,6 +83,10 @@ if __name__ == "__main__":
     print("\n🔗 Generating marketing emails for each cluster...\n")
 
     cluster_ids = df_clustered['ClusterLabel'].unique()
+    
+    # Save cluster emails to CSV
+    output_file = "data/cluster_emails.csv"
+    email_rows = [("ClusterID", "Subject", "Body", "Timestamp")]
     for cluster_id in cluster_ids:
         print(f"\n📦 Cluster {cluster_id}")
         profile = build_profile_for_cluster(df_clustered, cluster_id)
@@ -97,8 +101,16 @@ if __name__ == "__main__":
 
             if email_data:
                 
+                subject = email_data["subject"]
+                body = email_data["body"]
+                
                 print("✅ Subject:", email_data["subject"])
                 print("✅ Body:\n", email_data["body"])
+                
+                # Save the result to the list
+                email_rows.append((cluster_id, subject, body, datetime.now().isoformat()))
+                
+                
                
             # if not email_data:
             #      print("🚨 Full raw response:")
@@ -112,3 +124,9 @@ if __name__ == "__main__":
             print(f"❌ Failed to generate email for cluster {cluster_id}:", e)
 
 
+# Write the email_rows to a CSV file
+with open(output_file, mode="w", encoding="utf-8", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerows(email_rows)
+
+print(f"\n✅ All generated emails saved to: {output_file}")

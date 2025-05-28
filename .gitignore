@@ -1,1 +1,13 @@
+# Bytecode and caches
+__pycache__/
+*.pyc
+
+# Ignore cluster output and logs
+data/cluster_emails.csv
+
+# Virtual environments (if you create one)
+venv/
+myenv/
+
+# Secret keys
 .env

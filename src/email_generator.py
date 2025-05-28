@@ -4,12 +4,16 @@ from groq import Groq
 import json
 
 from dotenv import load_dotenv
-load_dotenv()
+
 import os
 # Directly pass the API key here (not recommended for production, fine for testing)
-GROQ_API_KEY = Groq(api_key=os.getenv("GROQ_API_KEY")) # 🔐 Replace with your actual Groq API key
+load_dotenv()
+api_key = os.getenv("GROQ_API_KEY")
 
-client = Groq(api_key=GROQ_API_KEY)
+if not api_key:
+    raise ValueError("❌ GROQ_API_KEY not found in environment.")
+
+client = Groq(api_key=api_key)
 
 def generate_email(customer_profile: dict, cluster_label: int) -> str:
     """
