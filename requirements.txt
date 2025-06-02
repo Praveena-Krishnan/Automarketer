@@ -23,3 +23,5 @@ streamlit
 
 # Env config
 python-dotenv
+
+groq

@@ -7,6 +7,7 @@ import json
 import re
 import csv
 from datetime import datetime
+from joblib import dump
 
 
 def extract_json(text):
@@ -67,6 +68,12 @@ if __name__ == "__main__":
     df_clustered = apply_kmeans(df_scaled, numeric_features, n_clusters=best_k)
     print("\nCluster distribution:")
     print(df_clustered['ClusterLabel'].value_counts())
+    
+    # ✅ Save the model
+    from sklearn.cluster import KMeans  # make sure you import this at top
+    model = KMeans(n_clusters=best_k, random_state=42)
+    model.fit(df_scaled[numeric_features])
+    dump(model, "models/kmeans_model.pkl")
 
     print("\nCluster summary (mean of features):")
     print(df_clustered[['ClusterLabel'] + numeric_features].groupby('ClusterLabel').mean())

@@ -22,7 +22,14 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
     df['Total_Spend'] = df[spend_cols].sum(axis=1)
 
     # Drop unused or redundant columns
-    df = df.drop(columns=['ID', 'Year_Birth', 'Dt_Customer', 'Z_CostContact', 'Z_Revenue'])
+    # Columns you want to drop if present
+    columns_to_drop = ['ID', 'Year_Birth', 'Dt_Customer', 'Z_CostContact', 'Z_Revenue']
+    existing_cols_to_drop = [col for col in columns_to_drop if col in df.columns]
+
+    df = df.drop(columns=existing_cols_to_drop)
+
+    
+    
 
     return df
 

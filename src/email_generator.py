@@ -46,7 +46,7 @@ def generate_email(customer_profile: dict, cluster_label: int) -> str:
 
 
     response = client.chat.completions.create(
-        model="llama3-8b-8192",  # or "llama3-8b-8192"
+        model="llama-3.1-8b-instant",  # or "llama3-8b-8192"
         messages=[
             {"role": "system", "content": "You are a helpful marketing assistant."},
             {"role": "user", "content": prompt}
