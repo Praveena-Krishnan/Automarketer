@@ -107,6 +107,3 @@ python src/send_real_email.py
 - For Gmail SMTP, you may need to create an [App Password](https://support.google.com/accounts/answer/185833) if 2FA is enabled.
 - Data files are expected in the `data/` directory.
 
-## License
-
-MIT License
